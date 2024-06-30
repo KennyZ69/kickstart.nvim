@@ -567,7 +567,20 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {},
-        gopls = {},
+        gopls = {
+          capabilities = capabilities,
+          completeUnimported = true,
+          analyses = {
+            unusedparams = true,
+          },
+          usePlaceholders = true,
+          staticcheck = true,
+          codelenses = {
+            generate = true,
+            gc_details = true,
+          },
+          experimentalPostfixCompletions = true,
+        },
         pyright = {},
         cssls = {},
         dockerls = {},
@@ -576,7 +589,7 @@ require('lazy').setup({
         bashls = {},
         tsserver = {},
         templ = {},
-        htmx = {},
+        -- htmx = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -883,7 +896,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
@@ -916,5 +929,19 @@ require('lazy').setup({
 })
 vim.filetype.add { extension = { templ = 'templ' } }
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, { pattern = { '*.templ' }, callback = vim.lsp.buf.format })
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+
+-- Function to insert a new line without moving the cursor
+function Insert_new_line()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  vim.api.nvim_buf_set_lines(0, row, row, true, { '' })
+  vim.api.nvim_win_set_cursor(0, { row, col })
+end
+
+-- Map the Enter key in normal mode to the function
+vim.api.nvim_set_keymap('n', '<CR>', ':lua Insert_new_line()<CR>', { noremap = true, silent = true })
+
+-- Save file with Ctrl+s in normal mode
+vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
+
+-- Insert newline and move to it with Ctrl+Enter in insert mode
+vim.api.nvim_set_keymap('i', '<C-CR>', '<Esc>o', { noremap = true, silent = true })
