@@ -893,6 +893,7 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
+
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
@@ -945,3 +946,29 @@ vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true 
 
 -- Insert newline and move to it with Ctrl+Enter in insert mode
 vim.api.nvim_set_keymap('i', '<C-CR>', '<Esc>o', { noremap = true, silent = true })
+
+--vim.api.nvim_set_keymap('i', '<C-l>', '<Right>', { noremap = true })
+--vim.api.nvim_set_keymap('i', '<C-h>', '<Left>', { noremap = true })
+
+-- Function to move cursor right in insert mode
+function Move_cursor_right()
+  -- Execute 'l' command in normal mode
+  vim.api.nvim_feedkeys('l', 'n', true)
+end
+
+-- Map Ctrl-l in insert mode to move cursor right by one character
+vim.api.nvim_set_keymap('i', '<C-l>', '<cmd>lua Move_cursor_right()<CR>', { noremap = true })
+
+function Move_cursor_left()
+  vim.api.nvim_feedkeys('h', 'n', true)
+end
+
+vim.api.nvim_set_keymap('i', '<C-h>', '<cmd>lua Move_cursor_left()<CR>', { noremap = true })
+
+-- Tailwind CSS IntelliSense
+--  {
+--    'JosefLitos/tailwindcss.nvim',
+--    config = function()
+--    require('tailwindcss').setup {}
+-- end,
+--  }
