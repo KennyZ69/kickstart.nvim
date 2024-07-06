@@ -273,7 +273,10 @@ require('lazy').setup({
   -- Then, because we use the `config` key, the configuration only runs
   -- after the plugin has been loaded:
   --  config = function() ... end
-
+  {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'kyazdani42/nvim-web-devicons', opt = true },
+  },
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -347,7 +350,39 @@ require('lazy').setup({
       -- This opens a window that shows you all of the keymaps for the current
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
-
+      require('nvim-web-devicons').setup {
+        default = true, -- Enable by default
+      }
+      require('lualine').setup {
+        options = {
+          icons_enabled = true,
+          theme = 'tokyonight',
+          section_separators = { '', '' },
+          component_separators = { '', '' },
+          disabled_filetypes = {},
+        },
+        sections = {
+          lualine_a = { 'mode' },
+          lualine_b = { 'branch' },
+          lualine_c = {
+            { 'filename', file_status = true, path = 1 },
+            { 'filetype', icon_only = true }, -- Add the filetype icon
+          },
+          lualine_x = { 'fileformat', 'filetype' },
+          lualine_y = { 'progress' },
+          lualine_z = { 'location' },
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = { 'filename' },
+          lualine_x = { 'location' },
+          lualine_y = {},
+          lualine_z = {},
+        },
+        tabline = {},
+        extensions = {},
+      }
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
