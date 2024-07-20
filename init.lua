@@ -227,6 +227,14 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+
+  -- Language syntax support for templ files
+  --  {
+  --   'sheerun/vim-polyglot',
+  -- config = function()
+  -- vim.g.polyglot_disabled = { 'sensible' }
+  --end,
+  -- },
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
@@ -306,6 +314,7 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
+  { 'themaxmarchuk/tailwindcss-colors.nvim' },
 
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
@@ -578,7 +587,7 @@ require('lazy').setup({
           -- This may be unwanted, since they displace some of your code
           if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
             map('<leader>th', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+              vim.lsp.inlay_hint.enable(true)
             end, '[T]oggle Inlay [H]ints')
           end
         end,
@@ -981,29 +990,12 @@ vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true 
 
 -- Insert newline and move to it with Ctrl+Enter in insert mode
 vim.api.nvim_set_keymap('i', '<C-CR>', '<Esc>o', { noremap = true, silent = true })
-
 --vim.api.nvim_set_keymap('i', '<C-l>', '<Right>', { noremap = true })
 --vim.api.nvim_set_keymap('i', '<C-h>', '<Left>', { noremap = true })
-
--- Function to move cursor right in insert mode
-function Move_cursor_right()
-  -- Execute 'l' command in normal mode
-  vim.api.nvim_feedkeys('l', 'n', true)
-end
-
--- Map Ctrl-l in insert mode to move cursor right by one character
-vim.api.nvim_set_keymap('i', '<C-l>', '<cmd>lua Move_cursor_right()<CR>', { noremap = true })
-
-function Move_cursor_left()
-  vim.api.nvim_feedkeys('h', 'n', true)
-end
-
-vim.api.nvim_set_keymap('i', '<C-h>', '<cmd>lua Move_cursor_left()<CR>', { noremap = true })
-
 -- Tailwind CSS IntelliSense
 --  {
 --    'JosefLitos/tailwindcss.nvim',
 --    config = function()
---    require('tailwindcss').setup {}
--- end,
+--      require('tailwindcss').setup {}
+--    end,
 --  }
