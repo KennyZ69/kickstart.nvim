@@ -228,6 +228,28 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
 
+  -- vim-markdown for syntax highlighting and editing enhancements
+  {
+    'preservim/vim-markdown',
+    ft = 'markdown',
+    config = function()
+      -- Optional: disable folding, set TOC settings, etc.
+      vim.g.vim_markdown_folding_disabled = 1
+    end,
+  },
+
+  -- markdown-preview.nvim for live preview in the browser
+  {
+    'iamcco/markdown-preview.nvim',
+    build = 'cd app && npm install',
+    ft = 'markdown',
+    config = function()
+      vim.g.mkdp_auto_start = 0 -- Automatically start preview on edit
+
+      -- :MarkdownPreview to start and :MarkdownPreviewStop to stop the preview.
+    end,
+  },
+
   -- Language syntax support for templ files
   --  {
   --   'sheerun/vim-polyglot',
