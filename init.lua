@@ -279,8 +279,9 @@ require('lazy').setup({
     config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup()
 
+      local wk = require('which-key')
       -- Document existing key chains
-      require('which-key').register {
+        wk.add ({
         ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
         ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
         ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
@@ -288,9 +289,9 @@ require('lazy').setup({
         ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
         ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
         ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
-      }
+      })
       -- visual mode
-      require('which-key').register({
+      wk.add ({
         ['<leader>h'] = { 'Git [H]unk' },
       }, { mode = 'v' })
     end,
@@ -325,7 +326,10 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', 
+        'yamatsum/nvim-nonicons',
+  requires = {'kyazdani42/nvim-web-devicons'},
+        enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -910,3 +914,31 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+vim.filetype.add { extension = { templ = 'templ' } }
+vim.api.nvim_create_autocmd({ 'BufWritePre' }, { pattern = { '*.templ' }, callback = vim.lsp.buf.format })
+
+-- Function to insert a new line without moving the cursor
+function Insert_new_line()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  vim.api.nvim_buf_set_lines(0, row, row, true, { '' })
+  vim.api.nvim_win_set_cursor(0, { row, col })
+end
+
+-- Map the Enter key in normal mode to the function
+vim.api.nvim_set_keymap('n', '<CR>', ':lua Insert_new_line()<CR>', { noremap = true, silent = true })
+
+-- Save file with Ctrl+s in normal mode
+vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
+
+-- Insert newline and move to it with Ctrl+Enter in insert mode
+vim.api.nvim_set_keymap('i', '<C-CR>', '<Esc>o', { noremap = true, silent = true })
+--vim.api.nvim_set_keymap('i', '<C-l>', '<Right>', { noremap = true })
+--vim.api.nvim_set_keymap('i', '<C-h>', '<Left>', { noremap = true })
+-- Tailwind CSS IntelliSense
+--  {
+--    'JosefLitos/tailwindcss.nvim',
+--    config = function()
+--      require('tailwindcss').setup {}
+--    end,
+--  }
