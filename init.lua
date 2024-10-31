@@ -91,8 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
-
+vim.g.have_nerd_font = true
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -102,7 +101,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -153,6 +152,8 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+
+vim.opt.relativenumber = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -226,6 +227,36 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+
+  -- vim-markdown for syntax highlighting and editing enhancements
+  {
+    'preservim/vim-markdown',
+    ft = 'markdown',
+    config = function()
+      -- Optional: disable folding, set TOC settings, etc.
+      vim.g.vim_markdown_folding_disabled = 1
+    end,
+  },
+
+  -- markdown-preview.nvim for live preview in the browser
+  {
+    'iamcco/markdown-preview.nvim',
+    build = 'cd app && npm install',
+    ft = 'markdown',
+    config = function()
+      vim.g.mkdp_auto_start = 0 -- Automatically start preview on edit
+
+      -- :MarkdownPreview to start and :MarkdownPreviewStop to stop the preview.
+    end,
+  },
+
+  -- Language syntax support for templ files
+  --  {
+  --   'sheerun/vim-polyglot',
+  -- config = function()
+  -- vim.g.polyglot_disabled = { 'sensible' }
+  --end,
+  -- },
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
@@ -272,16 +303,18 @@ require('lazy').setup({
   -- Then, because we use the `config` key, the configuration only runs
   -- after the plugin has been loaded:
   --  config = function() ... end
-
+  {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'kyazdani42/nvim-web-devicons', opt = true },
+  },
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup()
 
-      local wk = require('which-key')
       -- Document existing key chains
-        wk.add ({
+      require('which-key').register {
         ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
         ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
         ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
@@ -289,9 +322,9 @@ require('lazy').setup({
         ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
         ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
         ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
-      })
+      }
       -- visual mode
-      wk.add ({
+      require('which-key').register({
         ['<leader>h'] = { 'Git [H]unk' },
       }, { mode = 'v' })
     end,
@@ -303,6 +336,7 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
+  { 'themaxmarchuk/tailwindcss-colors.nvim' },
 
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
@@ -326,10 +360,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', 
-        'yamatsum/nvim-nonicons',
-  requires = {'kyazdani42/nvim-web-devicons'},
-        enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -350,7 +381,39 @@ require('lazy').setup({
       -- This opens a window that shows you all of the keymaps for the current
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
-
+      require('nvim-web-devicons').setup {
+        default = true, -- Enable by default
+      }
+      require('lualine').setup {
+        options = {
+          icons_enabled = true,
+          theme = 'tokyonight',
+          section_separators = { '', '' },
+          component_separators = { '', '' },
+          disabled_filetypes = {},
+        },
+        sections = {
+          lualine_a = { 'mode' },
+          lualine_b = { 'branch' },
+          lualine_c = {
+            { 'filename', file_status = true, path = 1 },
+            { 'filetype', icon_only = true }, -- Add the filetype icon
+          },
+          lualine_x = { 'fileformat', 'filetype' },
+          lualine_y = { 'progress' },
+          lualine_z = { 'location' },
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = { 'filename' },
+          lualine_x = { 'location' },
+          lualine_y = {},
+          lualine_z = {},
+        },
+        tabline = {},
+        extensions = {},
+      }
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
@@ -546,7 +609,7 @@ require('lazy').setup({
           -- This may be unwanted, since they displace some of your code
           if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
             map('<leader>th', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+              vim.lsp.inlay_hint.enable(true)
             end, '[T]oggle Inlay [H]ints')
           end
         end,
@@ -569,17 +632,37 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
+        clangd = {},
+        gopls = {
+          capabilities = capabilities,
+          completeUnimported = true,
+          analyses = {
+            unusedparams = true,
+          },
+          usePlaceholders = true,
+          staticcheck = true,
+          codelenses = {
+            generate = true,
+            gc_details = true,
+          },
+          experimentalPostfixCompletions = true,
+        },
+        pyright = {},
+        cssls = {},
+        dockerls = {},
+        html = {},
+        tailwindcss = {},
+        bashls = {},
+        -- tsserver = {},
+        templ = {},
+        -- htmx = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
         --
 
         lua_ls = {
@@ -628,7 +711,10 @@ require('lazy').setup({
       }
     end,
   },
-
+  {
+    'rust-lang/rust.vim', -- Rust syntax highlighting and commands
+    'simrat39/rust-tools.nvim', -- Enhanced Rust support with LSP
+  },
   { -- Autoformat
     'stevearc/conform.nvim',
     lazy = false,
@@ -788,8 +874,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-
+      vim.cmd.colorscheme 'habamax'
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
@@ -877,10 +962,11 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
+
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
@@ -911,10 +997,6 @@ require('lazy').setup({
     },
   },
 })
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
-
 vim.filetype.add { extension = { templ = 'templ' } }
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, { pattern = { '*.templ' }, callback = vim.lsp.buf.format })
 
@@ -942,3 +1024,45 @@ vim.api.nvim_set_keymap('i', '<C-CR>', '<Esc>o', { noremap = true, silent = true
 --      require('tailwindcss').setup {}
 --    end,
 --  }
+
+-- LSP and Rust tools setup
+local lspconfig = require 'lspconfig'
+local rust_tools = require 'rust-tools'
+
+-- Configure Rust Analyzer with rust-tools
+rust_tools.setup {
+  server = {
+    on_attach = function(_, bufnr)
+      -- Key mappings for Rust-specific actions
+      local opts = { noremap = true, silent = true }
+      vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+      vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+      vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+    end,
+    settings = {
+      ['rust-analyzer'] = {
+        cargo = { allFeatures = true },
+        checkOnSave = { command = 'clippy' },
+      },
+    },
+  },
+}
+
+-- Set up completion
+local cmp = require 'cmp'
+cmp.setup {
+  mapping = {
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<CR>'] = cmp.mapping.confirm { select = true },
+  },
+  sources = {
+    { name = 'nvim_lsp' },
+  },
+}
+
+-- Enable autoformat on save
+vim.cmd [[
+    autocmd BufWritePre *.rs lua vim.lsp.buf.format({ async = true })
+]]
