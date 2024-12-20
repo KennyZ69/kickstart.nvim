@@ -225,9 +225,10 @@ vim.opt.rtp:prepend(lazypath)
 --    :Lazy update
 --
 -- NOTE: Here is where you install your plugins.
-require('lazy').setup({
+require('lazy').setup {
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
 
+  { 'github/copilot.vim' }, -- trying to set up free version on copilot for desktop pc
   -- vim-markdown for syntax highlighting and editing enhancements
   {
     'preservim/vim-markdown',
@@ -647,15 +648,18 @@ require('lazy').setup({
           },
           experimentalPostfixCompletions = true,
         },
+        -- python-lsp-server = {},
+        pylsp = {},
         pyright = {},
         cssls = {},
         dockerls = {},
         html = {},
         tailwindcss = {},
         bashls = {},
-        -- tsserver = {},
+        ts_ls = {},
         templ = {},
-        -- htmx = {},
+        htmx = {},
+        -- htmx-lsp = {},
         rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -743,11 +747,11 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
+        javascript = { { 'prettierd', 'prettier' } },
       },
     },
   },
@@ -975,28 +979,28 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
-}, {
-  ui = {
-    -- If you are using a Nerd Font: set icons to an empty table which will use the
-    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-    icons = vim.g.have_nerd_font and {} or {
-      cmd = '⌘',
-      config = '🛠',
-      event = '📅',
-      ft = '📂',
-      init = '⚙',
-      keys = '🗝',
-      plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
-      source = '📄',
-      start = '🚀',
-      task = '📌',
-      lazy = '💤 ',
-    },
-  },
-})
+  { import = 'custom.plugins' },
+  -- }, {
+  --   ui = {
+  --     -- If you are using a Nerd Font: set icons to an empty table which will use the
+  --     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
+  --     icons = vim.g.have_nerd_font and {} or {
+  --       cmd = '⌘',
+  --       config = '🛠',
+  --       event = '📅',
+  --       ft = '📂',
+  --       init = '⚙',
+  --       keys = '🗝',
+  --       plugin = '🔌',
+  --       runtime = '💻',
+  --       require = '🌙',
+  --       source = '📄',
+  --       start = '🚀',
+  --       task = '📌',
+  --       lazy = '💤 ',
+  --     },
+  --   },
+}
 vim.filetype.add { extension = { templ = 'templ' } }
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, { pattern = { '*.templ' }, callback = vim.lsp.buf.format })
 
@@ -1018,16 +1022,19 @@ vim.api.nvim_set_keymap('i', '<C-CR>', '<Esc>o', { noremap = true, silent = true
 --vim.api.nvim_set_keymap('i', '<C-l>', '<Right>', { noremap = true })
 --vim.api.nvim_set_keymap('i', '<C-h>', '<Left>', { noremap = true })
 -- Tailwind CSS IntelliSense
---  {
---    'JosefLitos/tailwindcss.nvim',
---    config = function()
---      require('tailwindcss').setup {}
---    end,
---  }
+-- {
+--   'JosefLitos/tailwindcss.nvim',
+--   config = function()
+--     require('tailwindcss').setup {}
+--   end,
+-- }
+-- this does an error when starting up neovim but it still works
 
 -- LSP and Rust tools setup
 local lspconfig = require 'lspconfig'
 local rust_tools = require 'rust-tools'
+
+require('lspconfig').pyright.setup {}
 
 -- Configure Rust Analyzer with rust-tools
 rust_tools.setup {
@@ -1066,3 +1073,5 @@ cmp.setup {
 vim.cmd [[
     autocmd BufWritePre *.rs lua vim.lsp.buf.format({ async = true })
 ]]
+
+vim.g.python3_host_prog = '/home/kenny-desktop/.local/share/pipx/venvs/stem/bin/python'
