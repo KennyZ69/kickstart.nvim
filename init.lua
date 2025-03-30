@@ -421,11 +421,15 @@ require('lazy').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          --   mappings = {
+          --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          --   },
+          --
+          file_ignore_patters = {
+            'node_modules',
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -659,6 +663,7 @@ require('lazy').setup {
         ts_ls = {},
         templ = {},
         htmx = {},
+        zls = {},
         -- htmx-lsp = {},
         rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -1075,3 +1080,6 @@ vim.cmd [[
 ]]
 
 vim.g.python3_host_prog = '/home/kenny-desktop/.local/share/pipx/venvs/stem/bin/python'
+
+-- Insert "if err != nil" for go code and leave inside the curly braces
+vim.api.nvim_set_keymap('i', '<C-e>', 'if err != nil {}<Left><CR><Tab>', { noremap = true, silent = true })
