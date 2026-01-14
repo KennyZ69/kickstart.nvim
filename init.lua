@@ -228,6 +228,34 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup {
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
 
+  -- adding opencode plugins to use in nvim
+  {
+    'sudo-tee/opencode.nvim',
+    config = function()
+      require('opencode').setup {}
+    end,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      {
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          anti_conceal = { enabled = false },
+          file_types = { 'markdown', 'opencode_output' },
+        },
+        ft = { 'markdown', 'Avante', 'copilot-chat', 'opencode_output' },
+      },
+      -- Optional, for file mentions and commands completion, pick only one
+      'saghen/blink.cmp',
+      -- 'hrsh7th/nvim-cmp',
+
+      -- Optional, for file mentions picker, pick only one
+      'folke/snacks.nvim',
+      -- 'nvim-telescope/telescope.nvim',
+      -- 'ibhagwan/fzf-lua',
+      -- 'nvim_mini/mini.nvim',
+    },
+  },
+
   { 'github/copilot.vim' }, -- trying to set up free version on copilot for desktop pc
   -- vim-markdown for syntax highlighting and editing enhancements
   {
@@ -714,16 +742,14 @@ require('lazy').setup {
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
+            vim.lsp.config(server_name, server)
           end,
         },
       }
     end,
   },
-  {
-    'rust-lang/rust.vim', -- Rust syntax highlighting and commands
-    'simrat39/rust-tools.nvim', -- Enhanced Rust support with LSP
-  },
+  { 'rust-lang/rust.vim' }, -- Rust syntax highlighting and commands
+  -- { 'simrat39/rust-tools.nvim' }, -- Enhanced Rust support with LSP
   { -- Autoformat
     'stevearc/conform.nvim',
     lazy = false,
@@ -1021,6 +1047,7 @@ vim.api.nvim_set_keymap('n', '<CR>', ':lua Insert_new_line()<CR>', { noremap = t
 
 -- Save file with Ctrl+s in normal mode
 vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', 'w', ':w<CR>', { noremap = true, silent = true })
 
 -- Insert newline and move to it with Ctrl+Enter in insert mode
 vim.api.nvim_set_keymap('i', '<C-CR>', '<Esc>o', { noremap = true, silent = true })
@@ -1037,28 +1064,28 @@ vim.api.nvim_set_keymap('i', '<C-CR>', '<Esc>o', { noremap = true, silent = true
 
 -- LSP and Rust tools setup
 local lspconfig = require 'lspconfig'
-local rust_tools = require 'rust-tools'
+-- local rust_tools = require 'rust-tools'
 
-require('lspconfig').pyright.setup {}
+vim.lsp.config('pyright', {})
 
 -- Configure Rust Analyzer with rust-tools
-rust_tools.setup {
-  server = {
-    on_attach = function(_, bufnr)
-      -- Key mappings for Rust-specific actions
-      local opts = { noremap = true, silent = true }
-      vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-      vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-      vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-    end,
-    settings = {
-      ['rust-analyzer'] = {
-        cargo = { allFeatures = true },
-        checkOnSave = { command = 'clippy' },
-      },
-    },
-  },
-}
+-- rust_tools.setup {
+--   server = {
+--     on_attach = function(_, bufnr)
+--       -- Key mappings for Rust-specific actions
+--       local opts = { noremap = true, silent = true }
+--       vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+--       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+--       vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+--     end,
+--     settings = {
+--       ['rust-analyzer'] = {
+--         cargo = { allFeatures = true },
+--         checkOnSave = { command = 'clippy' },
+--       },
+--     },
+--   },
+-- }
 
 -- Set up completion
 local cmp = require 'cmp'
